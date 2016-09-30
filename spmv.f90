@@ -29,7 +29,7 @@ program spmv
   ! Now do the matrix-vector multiply, y = A*x
   ! Main outer loop over different N's
   ! This loop's value of vector length N
-  N = 10000
+  N = 2
 
   nrows = N*N
   nnzMax = 5*nrows
@@ -43,17 +43,17 @@ program spmv
 
   ! Sparsely fill the matrix.  This is essentially a finite
   ! difference approximation to the Laplacian on a NxN mesh
-  row = 1
-  nnz = 1
-  do i = 1, N
-     do j = 1, N
+  row = 0
+  nnz = 0
+  do i = 0, N-1
+     do j = 0, N-1
         ia(row) = nnz
-        if (i>1) then
+        if (i>0) then
            ja(nnz) = row -n
            A(nnz) = -1.0
            nnz = nnz+1
         end if
-        if (j>1) then
+        if (j>0) then
            ja(nnz) = row - 1
            A(nnz) = -1.0
            nnz = nnz+1
@@ -61,12 +61,12 @@ program spmv
         ja(nnz) = row
         A(nnz) = 4.0
         nnz = nnz+1
-        if (j<n) then
+        if (j<n-1) then
            ja(nnz) = row + 1
            A(nnz) = -1.0
            nnz = nnz+1
         end if
-        if (i<n) then
+        if (i<n-1) then
            ja(nnz) = row + n
            A(nnz) = -1.0
            nnz = nnz+1
@@ -76,26 +76,26 @@ program spmv
   end do
   ia(row) = nnz
 
+print *, nrows, nnz
   ! get_walltime is a C routine linked in
   call get_walltime(S)
   ! inner loop over vector of length N
-  do h = 1, 1
-     do row=1, nrows-1
-        tot = 0.0
-        do i=ia(row), ia(row+1)
-           tot = tot + A(i) * x(ja(i))
-        end do
-        y(row) = tot
+  do row=0, nrows-1
+     tot = 0.0
+     do i=ia(row), ia(row+1)
+        tot = tot + A(i) * x(ja(i))
      end do
-     ! This condition call to dummy is included to avoid the obvious
-     ! compiler optimization of removing the outer loop
-     !call dummy(y(row))
+     y(row) = tot
   end do
+
+  ! This condition call to dummy is included to avoid the obvious
+  ! compiler optimization of removing the outer loop
+  !call dummy(y(row))
   call get_walltime(E)
   ! Compute the mega-FLOPS performed
   NFLOPS = N*N*1.0 ! Figure out the right number!
   MFLOPS = 1*NFLOPS*8.d0/((E-S)*1.d6)
-  print *, N, MFLOPS
+  print *, N, nnz, nrows, MFLOPS
 
   ! wind down
   deallocate(A)
