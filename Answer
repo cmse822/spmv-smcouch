@@ -1,0 +1,24 @@
+# Problem
+##1
+In my opinion, in every kernel inner loop iteration, there are two Flops which are addition and multiplication. And the inner loop will be 
+excuted for n times. n denotes the number of nonzero element in the matrix.
+##2
+After compiling the code for a series of N, the results are as follows: 
+N = 10, MFLOPS = 400.000000
+N = 50, MFLOPs = 322.580645
+N = 100, MFLOPS = 301.886792
+N = 500, MFLOPs = 339.270568
+N = 1000, MFLOPS = 323.167037
+N = 5000, MFLOPs = 336.388300
+N = 10000, MFLOPS = 333.348612
+
+##3
+After optimizing the code with the loop unrolling, the results are as follows:
+N = 10, MFLOPS = 400.000000
+N = 50, MFLOPs = 312.500000
+N = 100, MFLOPS = 347.826087
+N = 500, MFLOPs = 360.036004
+N = 1000, MFLOPS = 329.733740
+N = 5000, MFLOPs = 391.091713
+N = 10000, MFLOPS = 401.503631
+By the way, I also include the code whose name is 
